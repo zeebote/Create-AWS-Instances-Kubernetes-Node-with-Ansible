@@ -1,0 +1,5 @@
+---
+# Vault file which will be encrypt with "ansible-vault" command
+vault_join_command: This is the output of command "kubeadm token create --print-join-command" on your cluster 
+vault_ec2_access_key: This is your IAM account access key - this account need permission to create instances on EC2 
+vault_ec2_secret_key: This is secret of above key
