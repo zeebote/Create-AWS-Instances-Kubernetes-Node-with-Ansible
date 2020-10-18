@@ -1,0 +1,49 @@
+---
+# Provision instances in AWS play 
+- name: Provision instances in AWS
+  hosts: localhost
+  gather_facts: False
+
+  tasks:
+    - name: Launch instances
+      ec2:
+        access_key: "{{ ec2_access_key }}"
+        secret_key: "{{ ec2_secret_key }}"
+        keypair: "{{ ec2_keypair }}"
+        group: ['default', 'ssh', 'EC2_INSTANCE_CONNECT']
+        type: "t2.micro"
+        image: "ami-021809d9177640a20"
+        region: "{{ ec2_region }}"
+        instance_tags: "{'Ansible_group':'Kuber-node', 'Owner':'Engineering', 'Stack':'Dev', 'Environment':'Devel', 'Kubernetes':'Node'}"
+        count: 1
+        vpc_subnet_id: "subnet-0d8e386b"
+        source_dest_check: "no"
+        wait: yes
+        wait_timeout: 500
+      register: ec2
+  
+    - name: Add new instance to host group
+      add_host:
+        hostname: "{{ item.public_ip }}"
+        groupname: just_launched
+      loop: "{{ ec2.instances }}"
+
+    - name: Wait for SSH to come up
+      delegate_to: "{{ item.public_dns_name }}"
+      wait_for_connection:
+        delay: 60
+        timeout: 320
+      loop: "{{ ec2.instances }}"
+      
+# Configure instance play
+- name: Configure the new instances 
+  hosts: just_launched
+  user: ubuntu
+  become: True
+  gather_facts: True
+  roles:
+    - docker
+    - kubernetes
+
+
+    
