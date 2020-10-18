@@ -1,0 +1,39 @@
+# aws_ec2.yml
+# Dynamic inventory for EC2
+plugin: aws_ec2
+
+# Update with your region
+regions:
+  - us-west-1
+# set strict to False    
+# if True this will make invalid entries 
+# a fatal error
+strict: False
+
+# a list in order of precedence for ansible hostname
+hostnames:
+  - ip-address
+  - dns-name
+  - tag:Name
+  - private-ip-address
+
+keyed_groups:
+  # add hosts to tag_Name_value groups for each aws_ec2 host's tags.Name variable
+  - key: tags.Kubernetes
+    prefix: Kubernetes_
+    separator: ""
+  - key: tags.Owner
+    prefix: Department_
+    separator: ""
+  - key: placement.region
+    prefix: ""
+    separator: ""
+groups:
+  # add hosts to the group development if any of the dictionary's keys or values is the word 'devel'
+  development: "'devel' in (tags|list)"
+  Dev_Env: tags.get('Stack') == 'Dev'
+
+compose:
+  # set the ansible_host variable to connect with the private IP address without changing the hostname
+  # ansible_host: private_ip_address
+  ansible_host: public_ip_address
