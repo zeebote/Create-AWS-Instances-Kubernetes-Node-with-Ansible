@@ -80,26 +80,44 @@ a new key. This account must have IAM role which have minimum policy to create i
    |--@Department_Engineering:
    |  |--13.56.179.70
    |  |--13.57.189.207
-   |--@Dev_Env:
-   |  |--13.56.179.70
-   |  |--13.57.189.207
    |--@Kubernetes_Master:
-   |  |--13.56.179.70
+   |  |--13.56.179.70      # Master node
    |--@Kubernetes_Node:
-   |  |--13.57.189.207
+   |  |--13.57.189.207     # Agent node
    |--@aws_ec2:
    |  |--13.56.179.70
    |  |--13.57.189.207
    |--@ungrouped:
-   |--@us_west_1:
-   |  |--13.56.179.70
-   |  |--13.57.189.207
    ```
    notice that we have 2 instances on this staging, one in Kubernetes_Master and one in Kubernetes_Node group
    
 1. Run the playbook to create instances and join them to cluster
    ```
    ansible-playbook ec2_provision.yml --ask-vault-pass
+   ```
+1. Inventory after deploy ec2_provision.yml
+   ```
+   @all:
+   |--@Department_Engineering:
+   |  |--13.56.179.70
+   |  |--13.57.189.207
+   |  |--18.144.39.142     
+   |  |--54.193.76.87
+   |  |--54.215.252.174
+   |--@Kubernetes_Master:
+   |  |--13.56.179.70
+   |--@Kubernetes_Node:
+   |  |--13.57.189.207
+   |  |--18.144.39.142     # new node
+   |  |--54.193.76.87      # new node
+   |  |--54.215.252.174    # new node
+   |--@aws_ec2:
+   |  |--13.56.179.70
+   |  |--13.57.189.207
+   |  |--18.144.39.142
+   |  |--54.193.76.87
+   |  |--54.215.252.174
+   |--@ungrouped:
    ```
    
    
