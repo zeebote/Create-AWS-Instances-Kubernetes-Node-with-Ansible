@@ -6,12 +6,71 @@ This Ansible script use to create AWS instances then join them into existing Kub
 1. AWS account with access key to your EC2 - You can use an existing account or create a new one with AWS IAM console then go to manage access key and generate 
 a new key. This account must have IAM role which have minimum policy to create instances in EC2. Please follow this [link](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html) for information how to create IAM role. You also need a key-pair which is used for ssh to instances. Please follwow this [link](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair) for how to create a key pair on ec2 console.<br>
 **How to use**
-1. Setup environment
-   - Create virtual env and install requirement packages
-      ```
-      python3 -m venv ansible-env
-      cd ansible-env
-      source bin/activate
-      pip3 install boto3 ansible
-      ```
+1. Setup virtual env and install requirement packages
+   ```
+   python3 -m venv ansible-env
+   cd ansible-env
+   source bin/activate
+   pip3 install boto3 ansible
+   ```
+   
+1. Get files from this repo
+   ```
+   git clone https://github.com/zeebote/Create-AWS-Instances-Kubernetes-Node-with-Ansible
+   cd Create-AWS-Instances-Kubernetes-Node-with-Ansible/
+   ```
+1. Configure AWSCLI credential (this is used by EC2 dynamic inventory)
+   ```
+   aws configure
+   AWS Access Key ID [None]:Your AWS Access Key
+   AWS Secret Access Key [None]: Your AWS Secret Access Key 
+   Default region name [None]: us-east-1
+   Default output format [None]: json
+   ```
+1. Update vault.yml (This is used by playbook)
+   ```vi ./staging/group_vars/all/vault.yml```
+   Update with proper info
+   ```
+   ---
+   # staging/group_vars_all/vault.yml
+   vault_join_command: "This is out put of 'kubeadm token create --print-join-command' on your cluster master
+   vault_ec2_access_key: "This is your IAM access key"
+   vault_ec2_secret_key: "This is above secret"
+   ```
+1. Encrypt the vault file
+   ``` 
+   ansible-vault encrypt statging/group_vars/all/vault.yml
+   New Vault password:
+   Confirm New Vault password:
+   Encryption successful
+   ```
+1. Download the private key of the key pair create on step 3 and update "ec2_keypair" variable in staging/group_vars/all/vars.yml with proper info
+1. Run the inventory before deploy the provision playbook
+  ```
+  ansible-inventory --graph
+  @all:
+  |--@Department_Engineering:
+  |  |--13.56.179.70
+  |  |--13.57.189.207
+  |--@Dev_Env:
+  |  |--13.56.179.70
+  |  |--13.57.189.207
+  |--@Kubernetes_Master:
+  |  |--13.56.179.70
+  |--@Kubernetes_Node:
+  |  |--13.57.189.207
+  |--@aws_ec2:
+  |  |--13.56.179.70
+  |  |--13.57.189.207
+  |--@ungrouped:
+  |--@us_west_1:
+  |  |--13.56.179.70
+  |  |--13.57.189.207
+  notice that we have 2 instances on this staging, one in Kubernetes_Master and one in Kubernetes_Node group
+  ```
+1. Run the playbook to create instances and join them to cluster
+   ```
+   ansible-playbook ec2_provision.yml --ask-vault-pass
+   ```
+   
    
