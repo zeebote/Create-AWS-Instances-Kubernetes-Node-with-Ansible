@@ -25,13 +25,13 @@ keyed_groups:
   - key: tags.Owner
     prefix: Department_
     separator: ""
-  - key: placement.region
-    prefix: ""
-    separator: ""
-groups:
+#  - key: placement.region
+    #prefix: ""
+    #separator: ""
+#groups:
   # add hosts to the group development if any of the dictionary's keys or values is the word 'devel'
-  development: "'devel' in (tags|list)"
-  Dev_Env: tags.get('Stack') == 'Dev'
+  #development: "'devel' in (tags|list)"
+  #Dev_Env: tags.get('Stack') == 'Dev'
 
 compose:
   # set the ansible_host variable to connect with the private IP address without changing the hostname
