@@ -1,5 +1,6 @@
 # Create-AWS-Instances-Kubernetes-Node-with-Ansible
-This Ansible script use to create AWS instances then join them into existing Kubernetes cluster
+This Ansible script use to create AWS instances then join them into existing Kubernetes cluster. <br>
+It is also group new the instances tags to dynamic inventory groups.
 **Requirements:**
 1. amazon.aws.ec2 plugin - Please follow this [link](https://docs.ansible.com/ansible/latest/collections/amazon/aws/ec2_module.html#synopsis) for information and requirements
 1. AWS SDK for Python (boto or boto3) - Please follow this [link](https://aws.amazon.com/sdk-for-python/) for installation and information about AWS SDK for Python
@@ -11,7 +12,7 @@ a new key. This account must have IAM role which have minimum policy to create i
    python3 -m venv ansible-env
    cd ansible-env
    source bin/activate
-   pip3 install boto3 ansible
+   pip3 install AWSCLI boto boto3 ansible
    ```
    
 1. Get files from this repo
@@ -108,9 +109,9 @@ a new key. This account must have IAM role which have minimum policy to create i
    |  |--13.56.179.70
    |--@Kubernetes_Node:
    |  |--13.57.189.207
-   |  |--18.144.39.142     # new node added
-   |  |--54.193.76.87      # new node added
-   |  |--54.215.252.174    # new node added
+   |  |--18.144.39.142     # new instance added
+   |  |--54.193.76.87      # new instance added
+   |  |--54.215.252.174    # new instance added
    |--@aws_ec2:
    |  |--13.56.179.70
    |  |--13.57.189.207
