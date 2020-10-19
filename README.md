@@ -44,30 +44,59 @@ a new key. This account must have IAM role which have minimum policy to create i
    Confirm New Vault password:
    Encryption successful
    ```
-1. Download the private key of the key pair create on step 3 and update "ec2_keypair" variable in staging/group_vars/all/vars.yml with proper info
-1. Run the inventory before deploy the provision playbook
-  ```
-  ansible-inventory --graph
-  @all:
-  |--@Department_Engineering:
-  |  |--13.56.179.70
-  |  |--13.57.189.207
-  |--@Dev_Env:
-  |  |--13.56.179.70
-  |  |--13.57.189.207
-  |--@Kubernetes_Master:
-  |  |--13.56.179.70
-  |--@Kubernetes_Node:
-  |  |--13.57.189.207
-  |--@aws_ec2:
-  |  |--13.56.179.70
-  |  |--13.57.189.207
-  |--@ungrouped:
-  |--@us_west_1:
-  |  |--13.56.179.70
-  |  |--13.57.189.207
-  notice that we have 2 instances on this staging, one in Kubernetes_Master and one in Kubernetes_Node group
-  ```
+1. Download the private key of the key pair create on step 3 and update "ec2_keypair" variable in staging/group_vars/all/vars.yml with proper info. <br>
+   Folder structure:
+   ```
+   .
+   ├── ec2-instances-keypair.pem # This is private key of IAM key-pair
+   ├── ansible.cfg               # Ansible configure file
+   ├── ec2_provision.yml         # Provisioning instances playbook
+   ├── log                       # Log
+   ├── README.md                 # Readme.md from this repo
+   ├── roles
+   │   ├── docker                # Docker role folder
+   │   │   ├── handlers
+   │   │   │   └── main.yml      # handlers job
+   │   │   └── tasks
+   │   │       └── main.yml      # docker role main tasks
+   │   └── kubernetes            # Kubernetes node role folder
+   │       ├── handlers
+   │       │   └── main.yml
+   │       ├── meta
+   │       │   └── main.yml      # Kubernetes dependentcy
+   │       └── tasks
+   │           └── main.yml      # Kubernetes role main tasks
+   └── staging
+       ├── aws_ec2.yml           # EC2 dynamic inventory setting
+       └── group_vars
+           └── all              
+               ├── vars.yml      # Variable for all groups
+               └── vault.yml     # Vault file - encrypted
+   ```
+1. Inventory before deploy the provision playbook
+   ```
+   ansible-inventory --graph
+   @all:
+   |--@Department_Engineering:
+   |  |--13.56.179.70
+   |  |--13.57.189.207
+   |--@Dev_Env:
+   |  |--13.56.179.70
+   |  |--13.57.189.207
+   |--@Kubernetes_Master:
+   |  |--13.56.179.70
+   |--@Kubernetes_Node:
+   |  |--13.57.189.207
+   |--@aws_ec2:
+   |  |--13.56.179.70
+   |  |--13.57.189.207
+   |--@ungrouped:
+   |--@us_west_1:
+   |  |--13.56.179.70
+   |  |--13.57.189.207
+   ```
+   notice that we have 2 instances on this staging, one in Kubernetes_Master and one in Kubernetes_Node group
+   
 1. Run the playbook to create instances and join them to cluster
    ```
    ansible-playbook ec2_provision.yml --ask-vault-pass
