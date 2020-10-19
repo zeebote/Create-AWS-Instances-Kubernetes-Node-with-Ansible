@@ -108,9 +108,9 @@ a new key. This account must have IAM role which have minimum policy to create i
    |  |--13.56.179.70
    |--@Kubernetes_Node:
    |  |--13.57.189.207
-   |  |--18.144.39.142     # new node
-   |  |--54.193.76.87      # new node
-   |  |--54.215.252.174    # new node
+   |  |--18.144.39.142     # new node added
+   |  |--54.193.76.87      # new node added
+   |  |--54.215.252.174    # new node added
    |--@aws_ec2:
    |  |--13.56.179.70
    |  |--13.57.189.207
@@ -119,5 +119,47 @@ a new key. This account must have IAM role which have minimum policy to create i
    |  |--54.215.252.174
    |--@ungrouped:
    ```
-   
+1. Test connection
+   ```
+   ansible Kubernetes_Node -m ping --ask-vault-pass
+   Vault password: 
+   54.215.252.174 | SUCCESS => {
+      "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+      },
+      "changed": false,
+      "ping": "pong"
+   }
+   54.193.76.87 | SUCCESS => {
+      "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+      },
+      "changed": false,
+      "ping": "pong"
+   }
+   13.57.189.207 | SUCCESS => {
+      "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+      },
+      "changed": false,
+      "ping": "pong"
+   }
+   18.144.39.142 | SUCCESS => {
+      "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+      },
+      "changed": false,
+      "ping": "pong"
+   }
+1. Check if new nodes are online and ready in Kubernetes cluster
+   ```
+   ubuntu@ip-172-31-31-19:~$ kubectl get node
+   NAME               STATUS   ROLES    AGE     VERSION
+   ip-172-31-16-12    Ready    <none>   7m8s    v1.18.3
+   ip-172-31-18-155   Ready    <none>   21h     v1.18.3
+   ip-172-31-24-207   Ready    <none>   7m7s    v1.18.3
+   ip-172-31-26-216   Ready    <none>   6m55s   v1.18.3
+   ip-172-31-31-19    Ready    master   23h     v1.18.3
+   ubuntu@ip-172-31-31-19:~$ 
+   ```
    
